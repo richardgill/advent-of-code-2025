@@ -39,4 +39,7 @@ bun test --watch src/days/01.1/
 
 # Run all tests
 bun test
+
+# Commit without running hooks
+git commit --no-verify
 ```
