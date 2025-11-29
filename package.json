@@ -1,0 +1,20 @@
+{
+  "name": "advent-of-code-2025",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "check": "biome check --error-on-warnings --diagnostic-level=warn",
+    "check-fix": "biome check --write --error-on-warnings --diagnostic-level=warn",
+    "typecheck": "tsc --noEmit",
+    "prepare": "lefthook install"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.1.1",
+    "@types/bun": "latest",
+    "lefthook": "^1.12.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

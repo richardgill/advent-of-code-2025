@@ -1,0 +1,15 @@
+pre-commit:
+  parallel: false
+  commands:
+    biome:
+      glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
+      run: bun biome check --write --error-on-warnings --diagnostic-level=warn --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+      stage_fixed: true
+    typecheck:
+      run: bun run typecheck
+
+pre-push:
+  commands:
+    biome:
+      glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
+      run: bun biome check --error-on-warnings --diagnostic-level=warn --no-errors-on-unmatched --files-ignore-unknown=true {push_files}
