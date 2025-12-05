@@ -7,11 +7,14 @@
     "check": "biome check --error-on-warnings --diagnostic-level=warn",
     "check-fix": "biome check --write --error-on-warnings --diagnostic-level=warn",
     "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "local-ci": "concurrently --group -p none -n 'check,typecheck,test' 'bun run check-fix' 'bun run typecheck' 'bun run test'",
     "prepare": "lefthook install"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",
     "@types/bun": "latest",
+    "concurrently": "^9.2.1",
     "lefthook": "^1.12.2"
   },
   "peerDependencies": {

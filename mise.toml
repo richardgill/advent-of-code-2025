@@ -1,0 +1,2 @@
+[tools]
+"ubi:scarvalhojr/aoc-cli" = { version = "latest", exe = "aoc" }
