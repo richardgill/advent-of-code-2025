@@ -3,46 +3,30 @@ import { lines } from "../../lib/utils";
 
 const input = await Bun.file(import.meta.dir + "/data/input.txt").text();
 
-const transpose = (grid: string[][]) => {
-  const height = grid.length;
-  const width = grid[0]?.length ?? -1;
+type Operator = "*" | "+";
+type Calculation = { numbers: number[]; operator: Operator };
 
-  console.log("zzz ", { height, width });
-  const newGrid = Array.from({ length: width }, () => Array(height).fill(0));
-  for (let x = 0; x < width; x++) {
-    for (let y = 0; y < height; y++) {
-      newGrid[x][y] = grid[y][x];
-    }
-  }
-  return newGrid;
+const transpose = <T>(grid: T[][]): T[][] => {
+  const width = grid[0]?.length ?? 0;
+  return Array.from({ length: width }, (_, x) =>
+    grid.map((row) => row[x] as T),
+  );
 };
 
-type Calculation = { numbers: number[]; operator: "*" | "+" };
+const doCalc = (calc: Calculation): number =>
+  calc.operator === "*"
+    ? calc.numbers.reduce((a, b) => a * b, 1)
+    : sum(calc.numbers);
 
-const doCalc = (calc: Calculation): number => {
-  if (calc.operator === "*") {
-    return calc.numbers.reduce((prev, current) => prev * current, 1);
-  }
-  if (calc.operator === "+") {
-    return calc.numbers.reduce((prev, current) => prev + current, 0);
-  }
-  throw new Error(`unknown operator ${calc.operator}`);
-};
+const parseCalculation = (row: string[]): Calculation => ({
+  numbers: row.slice(0, -1).map((x) => parseInt(x, 10)),
+  operator: row.at(-1) as Operator,
+});
 
 const solve = (input: string) => {
-  const data = lines(input).map((l) => l.split(/\s+/).filter((x) => x !== ""));
-  console.log("zzz datao", data);
-  const grid = transpose(data);
-  console.log("zzz grid", grid);
-  const calculations = grid.map(
-    (row): Calculation => ({
-      numbers: row.slice(0, row.length - 1).map((x) => parseInt(x, 10)),
-      operator: row[row.length - 1],
-    }),
-  );
-  const calculated = calculations.map((c) => doCalc(c));
-  console.log("zzz calculations", calculated);
-  return sum(calculated);
+  const data = lines(input).map((l) => l.split(/\s+/).filter(Boolean));
+  const columns = transpose(data);
+  return sum(columns.map(parseCalculation).map(doCalc));
 };
 
 console.log(solve(input));

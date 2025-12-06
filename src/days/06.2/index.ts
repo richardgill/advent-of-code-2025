@@ -3,20 +3,15 @@ import { lines } from "../../lib/utils";
 
 const input = await Bun.file(import.meta.dir + "/data/input.txt").text();
 
-const transpose = (grid: string[][]): string[][] => {
-  const height = grid.length;
-  const width = grid[0]?.length ?? -1;
-
-  const newGrid = Array.from({ length: width }, () => Array(height).fill(0));
-  for (let x = 0; x < width; x++) {
-    for (let y = 0; y < height; y++) {
-      newGrid[x][y] = grid[y][x];
-    }
-  }
-  return newGrid;
+const transpose = <T>(grid: T[][]): T[][] => {
+  const width = grid[0]?.length ?? 0;
+  return Array.from({ length: width }, (_, x) =>
+    grid.map((row) => row[x] as T),
+  );
 };
 
-type Calculation = { numbers: number[]; operator: "*" | "+" };
+type Operator = "*" | "+";
+type Calculation = { numbers: number[]; operator: Operator };
 
 const doCalc = (calc: Calculation): number => {
   if (calc.operator === "*") {
@@ -33,8 +28,8 @@ const solve = (input: string) => {
 
   const transposed = transpose(data);
 
-  const calcBlocks: string[][] = [[]];
-  for (const [index, row] of transposed.entries()) {
+  const calcBlocks: string[][][] = [[]];
+  for (const row of transposed) {
     if (row.every((x) => x === " ")) {
       calcBlocks.push([]);
     } else {
@@ -45,7 +40,7 @@ const solve = (input: string) => {
   }
 
   const calculations: Calculation[] = calcBlocks.flatMap((calcBlock) => {
-    const operator = calcBlock[0].pop();
+    const operator = calcBlock[0]?.pop() as Operator;
     return {
       operator,
       numbers: compact(
