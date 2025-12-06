@@ -1,10 +1,64 @@
+import { compact, sum } from "es-toolkit";
 import { lines } from "../../lib/utils";
 
 const input = await Bun.file(import.meta.dir + "/data/input.txt").text();
 
+const transpose = (grid: string[][]): string[][] => {
+  const height = grid.length;
+  const width = grid[0]?.length ?? -1;
+
+  const newGrid = Array.from({ length: width }, () => Array(height).fill(0));
+  for (let x = 0; x < width; x++) {
+    for (let y = 0; y < height; y++) {
+      newGrid[x][y] = grid[y][x];
+    }
+  }
+  return newGrid;
+};
+
+type Calculation = { numbers: number[]; operator: "*" | "+" };
+
+const doCalc = (calc: Calculation): number => {
+  if (calc.operator === "*") {
+    return calc.numbers.reduce((prev, current) => prev * current, 1);
+  }
+  if (calc.operator === "+") {
+    return calc.numbers.reduce((prev, current) => prev + current, 0);
+  }
+  throw new Error(`unknown operator ${calc.operator}`);
+};
+
 const solve = (input: string) => {
-  const data = lines(input);
-  return data.length;
+  const data = lines(input).map((l) => l.split(""));
+
+  const transposed = transpose(data);
+
+  const calcBlocks: string[][] = [[]];
+  for (const [index, row] of transposed.entries()) {
+    if (row.every((x) => x === " ")) {
+      calcBlocks.push([]);
+    } else {
+      const array = calcBlocks[calcBlocks.length - 1];
+      if (!array) throw new Error("array undefined");
+      array.push(row.filter((x) => x !== " " && x !== undefined));
+    }
+  }
+
+  const calculations: Calculation[] = calcBlocks.flatMap((calcBlock) => {
+    const operator = calcBlock[0].pop();
+    return {
+      operator,
+      numbers: compact(
+        calcBlock.map((b) => {
+          if (b.length === 0) return undefined;
+          return parseInt(b.join(""), 10);
+        }),
+      ),
+    };
+  });
+
+  const calculated = calculations.map((c) => doCalc(c));
+  return sum(calculated);
 };
 
 console.log(solve(input));
