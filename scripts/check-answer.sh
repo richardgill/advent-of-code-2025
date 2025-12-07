@@ -38,8 +38,6 @@ fi
 # Try to fetch correct answer from already-solved puzzle
 correct=$(aoc read -y "$year" -d "$day" 2>/dev/null | grep "Your puzzle answer was" | sed -n "${part}p" | sed 's/.*Your puzzle answer was \(.*\)\..*/\1/' || true)
 
-echo "correct: $correct"
-
 if [[ -n "$correct" ]]; then
   # Puzzle already solved - compare locally
   if [[ "$answer" == "$correct" ]]; then
